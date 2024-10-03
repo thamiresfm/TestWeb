@@ -13,25 +13,21 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
-  # Etapa 1: Restaurar o cache do npm (usando o package-lock.json)
-  - task: Cache@2
-    inputs:
-      key: 'npm | "$(Agent.OS)" | package-lock.json'
-      path: '$(Pipeline.Workspace)/node_modules'
-      restoreKeys: |
-        npm | "$(Agent.OS)"
-    displayName: 'Restaurar cache do npm'
-
-  # Etapa 2: Instalar Node.js
+  # Etapa 1: Instalar Node.js
   - task: NodeTool@0
     inputs:
       versionSpec: '16.x'
     displayName: 'Instalação do Node.js'
 
-  # Etapa 3: Instalar dependências
+  # Etapa 2: Instalar dependências
   - script: |
       npm install
     displayName: 'Instalação das dependências'
+
+  # Etapa 3: Verificar instalação do preprocessor
+  - script: |
+      npm install @badeball/cypress-cucumber-preprocessor
+    displayName: 'Instalação do cypress-cucumber-preprocessor'
 
   # Etapa 4: Configurar o Cypress
   - script: |
@@ -39,21 +35,13 @@ steps:
       npx cypress verify
     displayName: 'Configuração do Cypress'
 
-  # Etapa 5: Executar os testes
+  # Etapa 5: Executar os testes do Cypress
   - script: |
       npx cypress run
     displayName: 'Executando os testes do Cypress'
 
-  # Etapa 6: Publicar resultados dos testes
+  # Etapa 6: Publicar os resultados dos testes
   - task: PublishTestResults@2
     inputs:
       testResultsFiles: '**/results/*.xml'
-      testRunTitle: 'Resultados dos Testes Cypress'
-
-  # Etapa 7: Salvar o cache do npm
-  - task: Cache@2
-    inputs:
-      key: 'npm | "$(Agent.OS)" | package-lock.json'
-      path: '$(Pipeline.Workspace)/node_modules'
-      cacheHitVar: 'CACHE_RESTORED'
-    displayName: 'Salvar cache do npm'
+    displayName: 'Publicar resultados dos testes'
