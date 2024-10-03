@@ -27,7 +27,6 @@ steps:
   # Etapa 2: Baixar dependências do projeto e instalar o preprocessor
   - script: |
       npm install
-      npm install cypress-cucumber-preprocessor
     displayName: 'Instalação das dependências e preprocessor'
 
   # Etapa 3: Configurar e construir o Cypress no Windows
