@@ -6,7 +6,6 @@ trigger:
   branches:
     include:
       - main
-      - develop
 
 # Definição de variáveis
 variables:
@@ -27,9 +26,9 @@ steps:
   # Etapa 2: Baixar dependências do projeto e instalar o preprocessor
   - script: |
       npm install
-    displayName: 'Instalação das dependências e preprocessor'
+    displayName: 'Instalação das dependências'
 
-  # Etapa 3: Configurar e construir o Cypress no Windows
+  # Etapa 3: Configurar o Cypress e o preprocessor
   - script: |
       npx cypress install
       npx cypress verify
