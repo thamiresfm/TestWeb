@@ -1,47 +1,61 @@
-jobs:
-  - job: Cypress_e2e_tests
-    pool:
-      vmImage: 'ubuntu-latest'
-    strategy:
-      parallel: 4
-    steps:
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '20.x'
-          displayName: 'Install Node.js'
+# Nome do pipeline
+name: 'Cypress Test Pipeline'
 
-      - task: CacheBeta@1
-        inputs:
-          key: npm | $(Agent.OS) | package-lock.json
-          path: /home/vsts/.npm
-          restoreKeys: npm | $(Agent.OS) | package-lock.json
-        displayName: Cache npm packages
-      - task: CacheBeta@1
-        inputs:
-          key: cypress | $(Agent.OS) | package-lock.json
-          path: /home/vsts/.cache/Cypress
-          restoreKeys: cypress | $(Agent.OS) | package-lock.json
-        displayName: Cache Cypress binary
+# Dispara o pipeline em eventos de push e pull requests
+trigger:
+  branches:
+    include:
+      - main
+      - develop
 
-      # Install Node dependencies
-      - script: npm ci
-        displayName: 'Install npm dependencies'
+# Pool de agentes (Windows)
+pool:
+  vmImage: 'windows-latest'
 
-      - script: npm run cy:verify
-        displayName: 'Cypress verify'
+steps:
+  # Etapa 1: Restaurar o cache do npm (usando o package-lock.json)
+  - task: Cache@2
+    inputs:
+      key: 'npm | "$(Agent.OS)" | package-lock.json'
+      path: '$(Pipeline.Workspace)/node_modules'
+      restoreKeys: |
+        npm | "$(Agent.OS)"
+    condition: exists('package-lock.json')  # Apenas se o package-lock.json estiver presente
+    displayName: 'Restaurar cache do npm'
 
-      - script: npm run cy:info
-        displayName: 'Cypress info'
+  # Etapa 2: Instalar Node.js
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '16.x'
+    displayName: 'Instalação do Node.js'
 
-      - script: |
-          npx print-env AGENT
-          npx print-env BUILD
-          npx print-env SYSTEM
-          npm run start &
-          npx cypress run --record --parallel --ci-build-id $BUILD_BUILDNUMBER --group "Azure CI"
-        displayName: 'Run Cypress tests'
-        env:
-          # avoid warnings about terminal
-          TERM: xterm
-          # map the secret Cypress record key as environment variable for this step
-          CYPRESS_RECORD_KEY: $(CYPRESS_RECORD_KEY)
+  # Etapa 3: Instalar dependências
+  - script: |
+      npm install
+    displayName: 'Instalação das dependências'
+
+  # Etapa 4: Configurar o Cypress
+  - script: |
+      npx cypress install
+      npx cypress verify
+    displayName: 'Configuração do Cypress'
+
+  # Etapa 5: Executar os testes
+  - script: |
+      npx cypress run
+    displayName: 'Executando os testes do Cypress'
+
+  # Etapa 6: Publicar resultados dos testes
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '**/results/*.xml'
+      testRunTitle: 'Resultados dos Testes Cypress'
+      
+  # Etapa 7: Salvar o cache do npm
+  - task: Cache@2
+    inputs:
+      key: 'npm | "$(Agent.OS)" | package-lock.json'
+      path: '$(Pipeline.Workspace)/node_modules'
+      cacheHitVar: 'CACHE_RESTORED'
+    condition: and(succeeded(), exists('package-lock.json'))  # Apenas se o package-lock.json estiver presente
+    displayName: 'Salvar cache do npm'
