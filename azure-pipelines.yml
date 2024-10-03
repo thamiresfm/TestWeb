@@ -1,14 +1,14 @@
 # Nome do pipeline
-name: 'Pipeline Cypress com Cucumber'
+name: 'Cypress Pipeline com Atualização de Dependências'
 
-# Definir quando o pipeline será executado (em push ou pull requests)
+# Dispara o pipeline em eventos de push e pull requests
 trigger:
   branches:
     include:
       - main
       - develop
 
-# Configuração do ambiente (Windows mais recente)
+# Pool de agentes (Windows mais recente)
 pool:
   vmImage: 'windows-latest'
 
@@ -24,35 +24,41 @@ steps:
   - script: npm cache clean --force
     displayName: 'Limpar Cache do npm'
 
-  # Etapa 3: Instalar Dependências (inclui cypress-cucumber-preprocessor)
+  # Etapa 3: Atualizar Dependências Usando Resolutions
   - script: |
       npm install
-      npm install @badeball/cypress-cucumber-preprocessor
-    displayName: 'Instalar Dependências'
+      npm install -g npm-check-updates
+      ncu -u  # Atualiza dependências de acordo com resoluções no package.json
+      npm install
+    displayName: 'Atualizar Dependências com Resolutions'
 
-  # Etapa 4: Verificar Instalação do Preprocessor (para garantir que foi instalado corretamente)
+  # Etapa 4: Instalar Dependências do Cypress e do Preprocessor
+  - script: |
+      npm install @badeball/cypress-cucumber-preprocessor
+    displayName: 'Instalar Dependências do Cypress e Preprocessor'
+
+  # Etapa 5: Verificar Instalação do Preprocessor (para garantir que foi instalado corretamente)
   - script: |
       npm list @badeball/cypress-cucumber-preprocessor
     displayName: 'Verificar Instalação do Preprocessor'
 
-  # Etapa 5: Configurar o Cypress e o Preprocessor
+  # Etapa 6: Configurar e Verificar o Cypress
   - script: |
       npx cypress install
       npx cypress verify
-    displayName: 'Configuração do Cypress'
+    displayName: 'Configurar o Cypress'
 
-  # Etapa 6: Executar Testes com Cypress e Cucumber
+  # Etapa 7: Executar Testes do Cypress com Cucumber
   - script: |
       npx cypress run
-    displayName: 'Executando os Testes do Cypress'
+    displayName: 'Executando Testes do Cypress'
 
-  # Etapa 7: Publicar Resultados dos Testes
+  # Etapa 8: Publicar Resultados dos Testes
   - task: PublishTestResults@2
     inputs:
       testResultsFiles: '**/results/*.xml'
     displayName: 'Publicar Resultados dos Testes'
 
-  # Etapa 8: Limpar Cache do Cypress (opcional, caso ocorra erro de cache)
+  # Etapa 9: Limpar Cache do Cypress (opcional, caso haja erros)
   - script: npx cypress cache clear
     displayName: 'Limpar Cache do Cypress'
-
