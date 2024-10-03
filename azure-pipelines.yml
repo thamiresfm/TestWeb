@@ -20,7 +20,6 @@ steps:
       path: '$(Pipeline.Workspace)/node_modules'
       restoreKeys: |
         npm | "$(Agent.OS)"
-    condition: exists('package-lock.json')  # Apenas se o package-lock.json estiver presente
     displayName: 'Restaurar cache do npm'
 
   # Etapa 2: Instalar Node.js
@@ -50,12 +49,11 @@ steps:
     inputs:
       testResultsFiles: '**/results/*.xml'
       testRunTitle: 'Resultados dos Testes Cypress'
-      
+
   # Etapa 7: Salvar o cache do npm
   - task: Cache@2
     inputs:
       key: 'npm | "$(Agent.OS)" | package-lock.json'
       path: '$(Pipeline.Workspace)/node_modules'
       cacheHitVar: 'CACHE_RESTORED'
-    condition: and(succeeded(), exists('package-lock.json'))  # Apenas se o package-lock.json estiver presente
     displayName: 'Salvar cache do npm'
