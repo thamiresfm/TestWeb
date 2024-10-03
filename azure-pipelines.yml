@@ -21,7 +21,9 @@ steps:
 
   # Etapa 2: Instalar dependências, incluindo o preprocessor
   - script: |
-      npm install
+     npm install
+     npm install @badeball/cypress-cucumber-preprocessor
+
     displayName: 'Instalação das dependências'
 
   # Etapa 3: Verificar instalação do preprocessor
