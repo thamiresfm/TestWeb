@@ -10,7 +10,6 @@ trigger:
 
 # Definição de variáveis
 variables:
-  CYPRESS_BASE_URL: 'https://seu-site-ou-api.com'
   NODE_ENV: 'development'
 
 # Jobs e pool de agentes
@@ -25,11 +24,11 @@ steps:
       versionSpec: '16.x'
     displayName: 'Instalação do Node.js'
 
-  # Etapa 2: Instalação do Cypress e suas dependências
+  # Etapa 2: Baixar dependências do projeto e instalar o preprocessor
   - script: |
       npm install
       npm install cypress-cucumber-preprocessor
-    displayName: 'Instalação das dependências'
+    displayName: 'Instalação das dependências e preprocessor'
 
   # Etapa 3: Configurar e construir o Cypress no Windows
   - script: |
