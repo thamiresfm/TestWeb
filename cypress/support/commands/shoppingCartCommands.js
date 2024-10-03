@@ -27,4 +27,17 @@ Cypress.Commands.add('purchaseMultipleProducts', (products) => {
     cy.get('.complete-header').should('have.text', 'Thank you for your order!');
   });
   
+  Cypress.Commands.add('carryOutPurchase', (firstName, lastName, postalCode) => {
+
+    // Preenche as informações de envio se forem fornecidas, caso contrário, deixa o campo em branco
+    if (firstName !== undefined) cy.get('[data-test="firstName"]').clear().type(firstName);
+    if (lastName !== undefined) cy.get('[data-test="lastName"]').clear().type(lastName);
+    if (postalCode !== undefined) cy.get('[data-test="postalCode"]').clear().type(postalCode);
+  
+    // Tenta continuar o checkout
+    cy.get('[data-test="continue"]').click();
+  
+    // Verifica se uma mensagem de erro é exibida ao deixar os campos obrigatórios vazios
+    cy.get('.error-message-container').should('be.visible');
+  });
   

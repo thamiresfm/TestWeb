@@ -18,7 +18,6 @@ Given('que eu adiciono o produto {string} ao carrinho', (productName) => {
 
 
 When('eu ordeno os produtos por {string}', (tipoDeOrdenacao) => {
-  true
   cy.checkSorting(tipoDeOrdenacao); 
 });
 
@@ -37,8 +36,8 @@ Then('o carrinho deve conter o produto {string} com o preço {string}', (product
 });
 
 
-When('eu removo o produto {string} do carrinho', (productName) => {
-  cy.removeFromCart(productName); 
+When('eu removo o produto do carrinho na tela do produto', (productName) => {
+  cy.removeFromCartProduct(productName); 
 });
 
 Then('o produto {string} não deve estar no carrinho', (productName) => {

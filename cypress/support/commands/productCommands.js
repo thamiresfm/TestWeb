@@ -13,6 +13,12 @@ Cypress.Commands.add('addToCart', (productName) => {
       cy.get('.btn_inventory').should('contain.text', 'Add to cart'); // Verifica se o botão mudou para "Add to cart"
     });
   });
+
+    // Remover produto do carrinho na página de detalhes
+    Cypress.Commands.add('removeFromCartProduct', () => {
+      cy.get('[data-test="remove-sauce-labs-backpack"]').click(); // Clica no botão "Remove" na página de detalhes
+    });
+    
   
   
   Cypress.Commands.add('verifyProductInCart', (productName, productPrice) => {

@@ -41,14 +41,16 @@ Then('a compra deve ser finalizada com sucesso com a mensagem {string}', (mensag
 
 // Validação de campos obrigatórios no checkout
 When('eu tento finalizar a compra sem preencher {string}', (campo) => {
-  if (campo === 'Nome') {
-    cy.carryOutPurchase('', testData.information.lastName, testData.information.postalCode);
-  } else if (campo === 'Sobrenome') {
-    cy.carryOutPurchase(testData.information.firstName, '', testData.information.postalCode);
-  } else if (campo === 'Código Postal') {
-    cy.carryOutPurchase(testData.information.firstName, testData.information.lastName, '');
-  }
-  cy.get('[data-test="continue"]').click();
+  cy.fixture('shoppingCartData').then((testData) => {
+    if (campo === 'Nome') {
+        cy.carryOutPurchase('', testData.information.lastName, testData.information.postalCode);
+      } else if (campo === 'Sobrenome') {
+        cy.carryOutPurchase(testData.information.firstName, '', testData.information.postalCode);
+      } else if (campo === 'Código Postal') {
+        cy.carryOutPurchase(testData.information.firstName, testData.information.lastName, '');
+      }
+      cy.get('[data-test="continue"]').click();
+  });
 });
 
 Then('devo ver a mensagem de erro {string}', (mensagemErro) => {

@@ -20,5 +20,5 @@ Feature: Ordenação e carrinho na página de produtos
 
   Scenario: Remover um produto do carrinho e verificar remoção
     Given que eu adiciono o produto "Sauce Labs Backpack" ao carrinho
-    When eu removo o produto "Sauce Labs Backpack" do carrinho
+    When eu removo o produto do carrinho na tela do produto
     Then o produto "Sauce Labs Backpack" não deve estar no carrinho
