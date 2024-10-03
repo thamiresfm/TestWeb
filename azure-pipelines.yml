@@ -8,9 +8,6 @@ trigger:
       - main
       - develop
 
-# Definição de variáveis
-variables:
-  CYPRESS_BASE_URL: 'https://seu-site-ou-api.com'
 
 # Jobs e pool de agentes
 pool:
@@ -19,9 +16,10 @@ pool:
 # Etapas do pipeline
 steps:
   # Etapa 1: Instalação do Node.js
-  - task: UseNode@2
+  - task: NodeTool@0
     inputs:
-      version: '16.x'  # Especifique a versão necessária do Node.js
+      versionSpec: '16.x'  # Especifique a versão necessária do Node.js
+    displayName: 'Instalação do Node.js'
 
   # Etapa 2: Baixar dependências do projeto
   - script: |
