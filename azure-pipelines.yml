@@ -19,7 +19,7 @@ steps:
       versionSpec: '16.x'
     displayName: 'Instalação do Node.js'
 
-  # Etapa 2: Instalar dependências
+  # Etapa 2: Instalar dependências, incluindo o preprocessor
   - script: |
       npm install
     displayName: 'Instalação das dependências'
