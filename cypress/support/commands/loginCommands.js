@@ -2,14 +2,12 @@
 Cypress.Commands.add('login', (username, password) => {
     cy.visit('/'); 
     if (username && password ) {
-      cy.log("OI")
       cy.get('[data-test="username"]').type(username);
       cy.get('[data-test="password"]').type(password);
       cy.get('[data-test="login-button"]').click();
       cy.log('log out any message we want here')
       cy.log('another message', ['one', 'two', 'three'])
     } else {
-      cy.log("XAU")
       cy.get('[data-test="login-button"]').click();
     }
   });

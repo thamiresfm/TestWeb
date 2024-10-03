@@ -1,7 +1,7 @@
 Feature: Testes de Login com Vários Usuários
 
   Background:
-    Given eu carrego os dados de login
+    Given eu faço login com o usuário "standard_user" e senha "secret_sauce"
 
   Scenario Outline: Login com sucesso com o usuário "<username>"
     When eu faço login com o usuário "<username>" e senha "<password>"

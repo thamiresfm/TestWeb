@@ -1,2 +1,5 @@
 import './commands'
 import './commands/loginCommands'
+import './commands/productCommands'
+import './commands/productDetailsCommands'
+import './commands/shoppingCartCommands'

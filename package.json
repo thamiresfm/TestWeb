@@ -1,5 +1,5 @@
 {
-  "name": "1.0.1",
+  "name": "Automation Test Web",
   "version": "1.0.0",
   "main": "cypress.config.js",
   "scripts": {
@@ -10,12 +10,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@badeball/cypress-cucumber-preprocessor": "^21.0.0",
-    "cypress": "^13.15.0"
-   
+    "@badeball/cypress-cucumber-preprocessor": "^21.0.0"
   },
   "cypress-cucumber-preprocessor": {
     "nonGlobalStepsDefinitions": true,
     "stepDefinitions": "cypress/e2e/step_definitions"
+  },
+  "devDependencies": {
+    "cypress": "^13.15.0"
   }
 }
