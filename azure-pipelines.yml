@@ -8,31 +8,42 @@ trigger:
       - main
       - develop
 
+# Definição de variáveis
+variables:
+  CYPRESS_BASE_URL: 'https://seu-site-ou-api.com'
+  NODE_ENV: 'development'
 
 # Jobs e pool de agentes
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 # Etapas do pipeline
 steps:
   # Etapa 1: Instalação do Node.js
   - task: NodeTool@0
     inputs:
-      versionSpec: '16.x'  # Especifique a versão necessária do Node.js
+      versionSpec: '16.x'
     displayName: 'Instalação do Node.js'
 
-  # Etapa 2: Baixar dependências do projeto
+  # Etapa 2: Instalação do Cypress e suas dependências
   - script: |
       npm install
+      npm install cypress-cucumber-preprocessor
     displayName: 'Instalação das dependências'
 
-  # Etapa 3: Execução dos testes Cypress
+  # Etapa 3: Configurar e construir o Cypress no Windows
+  - script: |
+      npx cypress install
+      npx cypress verify
+    displayName: 'Configuração do Cypress'
+
+  # Etapa 4: Execução dos testes Cypress no Windows
   - script: |
       npx cypress run
     displayName: 'Executando os testes do Cypress'
 
-  # Etapa 4: Publicar resultados dos testes
+  # Etapa 5: Publicar resultados dos testes
   - task: PublishTestResults@2
     inputs:
-      testResultsFiles: '**/results/*.xml'  # Caso utilize um plugin para Cypress gerar XML
+      testResultsFiles: '**/results/*.xml'
       testRunTitle: 'Resultados dos Testes Cypress'
