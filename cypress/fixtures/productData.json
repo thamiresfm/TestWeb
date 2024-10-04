@@ -1,8 +1,8 @@
 {
-    "information":{ 
-    "firstName": "Teste nome", 
-    "lastName": "Teste sobrenome", 
-    "postalCode":"24890000" 
+  "checkoutInfo": {
+    "firstName": "Test",
+    "lastName": "User",
+    "postalCode": "12345"
   },
   "products": [
     {
@@ -12,7 +12,18 @@
     {
       "name": "Sauce Labs Bike Light",
       "price": "$9.99"
+    },
+    {
+      "name": "Sauce Labs Bolt T-Shirt",
+      "price": "$15.99"
+    },
+    {
+      "name": "Sauce Labs Fleece Jacket",
+      "price": "$49.99"
+    },
+    {
+      "name": "Test.allTheThings() T-Shirt (Red)",
+      "price": "$15.99"
     }
   ]
-    
 }

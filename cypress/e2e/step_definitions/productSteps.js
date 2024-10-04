@@ -1,45 +1,41 @@
+
 import { Given, When, Then } from "cypress-cucumber-preprocessor/steps";
 
-let testData;
 
-before(() => {
-  cy.fixture('productData').then((t) => {
-    testData = t;
-  });
+beforeEach(() => {
+  cy.fixture('productData').as("productData");
+  cy.fixture('loginData').as("userData");
 });
 
-Given('eu faço login com o usuário {string} e senha {string}', (username, password) => {
-  cy.login(username, password); 
+Given('I log in with standard user', function ()  {
+  const user = this.userData.login["admin_user"];
+    cy.login(user.username, user.password);
 });
 
-Given('que eu adiciono o produto {string} ao carrinho', (productName) => {
+Given('I add the product {string} to the cart', (productName) => {
   cy.addToCart(productName); 
 });
 
-
-When('eu ordeno os produtos por {string}', (tipoDeOrdenacao) => {
-  cy.checkSorting(tipoDeOrdenacao); 
+When('I sort the products by {string}', (sortingType) => {
+  cy.checkSorting(sortingType); 
 });
 
-Then('os produtos devem estar corretamente ordenados por {string}', (criterio) => {
-  cy.checkSorting(criterio);
+Then('the products should be correctly sorted by {string}', (criteria) => {
+  cy.checkSorting(criteria);
 });
 
-
-When('eu adiciono o produto {string} ao carrinho', (productName) => {
-  cy.addToCart(productName); 
-});
-
-
-Then('o carrinho deve conter o produto {string} com o preço {string}', (productName, productPrice) => {
+Then('the cart should contain the product {string} with the price {string}', (productName, productPrice) => {
   cy.verifyProductInCart(productName, productPrice); 
 });
 
-
-When('eu removo o produto do carrinho na tela do produto', (productName) => {
+When('I remove the product from the cart on the product page', (productName) => {
   cy.removeFromCartProduct(productName); 
 });
 
-Then('o produto {string} não deve estar no carrinho', (productName) => {
+Then('the product {string} should not be in the cart', (productName) => {
   cy.get('[data-test="shopping-cart-link"]').should('not.contain', productName); 
+});
+
+When('I try to remove the product {string} from the cart', (productName) => {
+  cy.removeFromCartProduct(productName); 
 });

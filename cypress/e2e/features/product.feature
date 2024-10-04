@@ -1,24 +1,31 @@
-Feature: Ordenação e carrinho na página de produtos
+Feature: Sorting and cart on the products page
 
   Background:
-    Given eu faço login com o usuário "standard_user" e senha "secret_sauce"
+    Given I log in with standard user
 
-  Scenario Outline: Ordenar produtos por diferentes critérios
-    When eu ordeno os produtos por "<tipoDeOrdenacao>"
-    Then os produtos devem estar corretamente ordenados por "<criterio>"
+  Scenario Outline: Sort products by different criteria "<sortingType>"
+    When I sort the products by "<sortingType>"
+    Then the products should be correctly sorted by "<criteria>"
 
     Examples:
-      | tipoDeOrdenacao | criterio       |
-      | az              | Name (A to Z)  |
-      | za              | Name (Z to A)      |
-      | lohi            | Price (low to high)    |
-      | hilo            | Price (high to low)    |
+      | sortingType | criteria             |
+      | az          | Name (A to Z)        |
+      | za          | Name (Z to A)        |
+      | lohi        | Price (low to high)  |
+      | hilo        | Price (high to low)  |
 
-  Scenario: Adicionar um produto ao carrinho e verificar nome e preço
-    When eu adiciono o produto "Sauce Labs Backpack" ao carrinho
-    Then o carrinho deve conter o produto "Sauce Labs Backpack" com o preço "$29.99"
+  Scenario: Add a product to the cart and verify name and price
+    When I add the product "Sauce Labs Backpack" to the cart
+    Then the cart should contain the product "Sauce Labs Backpack" with the price "$29.99"
 
-  Scenario: Remover um produto do carrinho e verificar remoção
-    Given que eu adiciono o produto "Sauce Labs Backpack" ao carrinho
-    When eu removo o produto do carrinho na tela do produto
-    Then o produto "Sauce Labs Backpack" não deve estar no carrinho
+  Scenario: Remove a product from the cart and verify removal
+    Given I add the product "Sauce Labs Bike Light" to the cart
+    When I remove the product from the cart on the product page
+    Then the product "Sauce Labs Backpack" should not be in the cart
+
+  Scenario: Add multiple products to the cart and verify their names and prices
+    When I add the product "Sauce Labs Backpack" to the cart
+    And I add the product "Sauce Labs Bike Light" to the cart
+    Then the cart should contain the product "Sauce Labs Backpack" with the price "$29.99"
+    And the cart should contain the product "Sauce Labs Bike Light" with the price "$9.99"
+
