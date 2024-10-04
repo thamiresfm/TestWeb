@@ -4,8 +4,21 @@
     "usernameRequired": "Epic sadface: Username is required",
     "passwordRequired": "Epic sadface: Password is required",
     "invalidLogin": "Epic sadface: Username and password do not match any user in this service"
+  },
+  "login": {
+    "admin_user": { "username": "standard_user", "password": "secret_sauce" },
+    "standard_user": { "username": "standard_user", "password": "secret_sauce" },
+    "locked_out_user": { "username": "locked_out_user", "password": "secret_sauce" },
+    "problem_user": { "username": "problem_user", "password": "secret_sauce" },
+    "performance_glitch_user": { "username": "performance_glitch_user", "password": "secret_sauce" },
+    "empty_username": { "username": "", "password": "secret_sauce" },
+    "empty_password": { "username": "standard_user", "password": "" },
+    "invalid_user": { "username": "invalid_user", "password": "invalid_pass" },
+    "random_user": { "username": "user_123456", "password": "random_pass" },
 
+    "long_username": { "username": "user123456789012345678901234567890", "password": "secret_sauce" },
+    "long_password": { "username": "standard_user", "password": "password123456789012345678901234567890" },
+    "special_username": { "username": "!@#$%^&*()_+", "password": "secret_sauce" },
+    "special_password": { "username": "standard_user", "password": "!@#$%^&*()_+" }
   }
-  
-  
 }

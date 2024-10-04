@@ -14,7 +14,7 @@ Feature: Página de Carrinho de Compras
     Then a compra deve ser finalizada com sucesso com a mensagem "Thank you for your order!"
 
   Scenario Outline: Validação de campos obrigatórios durante o checkout
-    And eu adiciono produtos ao carrinho e realizo o checkout
+    And eu adiciono produtos ao carrinho
     When eu tento finalizar a compra sem preencher "<campo>"
     Then devo ver a mensagem de erro "Error: <mensagemDeErro>"
 

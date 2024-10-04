@@ -10,7 +10,8 @@ Cypress.Commands.add('purchaseMultipleProducts', (products) => {
   });
 
 
-  Cypress.Commands.add('completePurchase', (firstName, lastName, postalCode) => {
+  Cypress.Commands.add('completePurchase', (firstName='', lastName='', postalCode='') => {
+    cy.log(firstName, lastName, postalCode)
     // Preenche as informações de envio
     if (firstName) cy.get('[data-test="firstName"]').clear().type(firstName);
     if (lastName) cy.get('[data-test="lastName"]').clear().type(lastName);

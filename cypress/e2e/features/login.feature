@@ -1,40 +1,45 @@
-Feature: Testes de Login com Vários Usuários
+Feature: Login tests with different types of users
 
   Background:
-    Given eu faço login com o usuário "standard_user" e senha "secret_sauce"
+    Given I load the login data
 
-  Scenario Outline: Login com sucesso com o usuário "<username>"
-    When eu faço login com o usuário "<username>" e senha "<password>"
-    Then eu devo ver a página de inventário
-
-    Examples:
-      | username                 | password     |
-      | standard_user            | secret_sauce |
-      | problem_user             | secret_sauce |
-      | performance_glitch_user  | secret_sauce |
-
-  Scenario Outline: Exibir erro para o usuário "<username>"
-    When eu faço login com o usuário "<username>" e senha "<password>"
-    Then eu devo ver a mensagem de erro "<errorKey>"
+  @login-success
+  Scenario Outline: Successful login with the user "<userType>"
+    When I log in with the user type "<userType>"
+    Then I should see the inventory page
 
     Examples:
-      | username           | password     | errorKey          |
-      | locked_out_user    | secret_sauce | lockedOut         |
-      | error_usern        | secret_sauce | invalidLogin      |
-      |                    |              | usernameRequired  |
+      | userType                 |
+      | standard_user            |
+      | admin_user               |
+      | performance_glitch_user  |
 
-  Scenario: Deve fazer logout corretamente após o login de qualquer usuário
-    When eu faço login com o usuário "standard_user" e senha "secret_sauce"
-    When eu faço logout
-    Then eu devo ver a página inicial
-
-  Scenario Outline: Deve exibir erro ao tentar logar com <descrição>
-    When eu faço login com o usuário "<username>" e senha "<password>"
-    Then eu devo ver a mensagem de erro "invalidLogin"
+  @login-error
+  Scenario Outline: Show error when attempting login with the user "<userType>"
+    When I log in with the user type "<userType>"
+    Then I should see the error message "<errorKey>"
 
     Examples:
-      | descrição                                 | username                               | password                                  |
-      | nome de usuário muito longo               | user123456789012345678901234567890     | secret_sauce                              |
-      | senha muito longa                         | standard_user                          | password123456789012345678901234567890    |
-      | nome de usuário com caracteres especiais  | !@#$%^&*()_+                           | secret_sauce                              |
-      | senha com caracteres especiais            | standard_user                          | !@#$%^&*()_+                              |
+      | userType            | errorKey           |
+      | locked_out_user     | lockedOut          |
+      | empty_username      | usernameRequired   |
+      | empty_password      | passwordRequired   |
+      | invalid_user        | invalidLogin       |
+
+  @login-input-extremes
+  Scenario Outline: Should show error when attempting login with the user type "<userType>"
+    When I log in with the user type "<userType>"
+    Then I should see the error message "invalidLogin"
+
+    Examples:
+      | userType           |
+      | long_username      |
+      | long_password      |
+      | special_username   |
+      | special_password   |
+
+  @logout
+  Scenario: Should log out successfully after successful login
+    When I log in with the user type "standard_user"
+    And I log out
+    Then I should see the initial page

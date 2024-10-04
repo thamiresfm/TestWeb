@@ -35,6 +35,13 @@ When('eu adiciono produtos ao carrinho e realizo o checkout', () => {
   cy.completePurchase(testData.information.firstName, testData.information.lastName, testData.information.postalCode);
 });
 
+When('eu adiciono produtos ao carrinho', () => {
+  cy.purchaseMultipleProducts(testData.products);
+  cy.get('.shopping_cart_link').click();
+  cy.get('[data-test="checkout"]').click();
+  // cy.completePurchase(testData.information.firstName, testData.information.lastName, testData.information.postalCode);
+});
+
 Then('a compra deve ser finalizada com sucesso com a mensagem {string}', (mensagemSucesso) => {
   cy.get('.complete-header').should('have.text', mensagemSucesso);
 });
@@ -42,16 +49,33 @@ Then('a compra deve ser finalizada com sucesso com a mensagem {string}', (mensag
 // Validação de campos obrigatórios no checkout
 When('eu tento finalizar a compra sem preencher {string}', (campo) => {
   cy.fixture('shoppingCartData').then((testData) => {
-    if (campo === 'Nome') {
-        cy.carryOutPurchase('', testData.information.lastName, testData.information.postalCode);
-      } else if (campo === 'Sobrenome') {
-        cy.carryOutPurchase(testData.information.firstName, '', testData.information.postalCode);
-      } else if (campo === 'Código Postal') {
-        cy.carryOutPurchase(testData.information.firstName, testData.information.lastName, '');
+    // Garante que a página de checkout está carregada corretamente
+    cy.url().should('include', '/checkout-step-one.html');
+
+    // Mapeia os campos com seus seletores e valores
+    const campos = {
+      'Nome': { selector: '[data-test="firstName"]', value: testData.information.firstName },
+      'Sobrenome': { selector: '[data-test="lastName"]', value: testData.information.lastName },
+      'Código Postal': { selector: '[data-test="postalCode"]', value: testData.information.postalCode }
+    };
+
+    // Itera pelos campos, preenchendo apenas aqueles que não foram indicados para serem deixados em branco
+    Object.keys(campos).forEach((key) => {
+      if (key !== campo) {
+        cy.get(campos[key].selector).clear().type(campos[key].value); // Preenche os campos que não são o campo "em branco"
+      } else {
+        cy.get(campos[key].selector).clear(); // Deixa o campo solicitado em branco
       }
-      cy.get('[data-test="continue"]').click();
+    });
+
+    // Clica no botão "Continue" para tentar continuar o checkout
+    cy.get('[data-test="continue"]').click();
+
+    // Verifica se uma mensagem de erro é exibida
+    cy.get('.error-message-container').should('be.visible');
   });
 });
+
 
 Then('devo ver a mensagem de erro {string}', (mensagemErro) => {
   cy.get('.error-message-container').should('have.text', mensagemErro);
