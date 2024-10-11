@@ -8,9 +8,17 @@
       "lastName": "Doe",
       "postalCode": "12345"
     },
+
+    "errorMessages": {
+      "First Name is required": "Error: First Name is required",
+      "Last Name is required": "Error: Last Name is required",
+      "Postal Code is required": "Error: Postal Code is required"
+    },
     "products": [
       { "name": "Sauce Labs Backpack", "price": "$29.99" },
       { "name": "Sauce Labs Bike Light", "price": "$9.99" }
     ]
   }
+
+
   
