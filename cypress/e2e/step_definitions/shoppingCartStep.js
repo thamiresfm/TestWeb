@@ -32,7 +32,7 @@
 //   cy.purchaseMultipleProducts(testData.products);
 //   cy.get('.shopping_cart_link').click();
 //   cy.get('[data-test="checkout"]').click();
-//   cy.completePurchase(testData.information.firstName, testData.information.lastName, testData.information.postalCode);
+//   cy.completePurchase(testData.valid.firstName, testData.valid.lastName, testData.valid.postalCode);
 // });
 
 // When('eu adiciono produtos ao carrinho', () => {
@@ -95,6 +95,27 @@ before(() => {
     testData = data;
   });
 });
+
+
+// before(() => {
+//   // Carregando os dados da fixture
+//   cy.fixture('userData').then(function(data) {
+//     this.data = data;
+//   });
+// });
+
+// Quando eu tento completar a compra com dados inválidos
+When('I try to complete the purchase with an invalid {string}', function (field) {
+  const invalidData = {
+    firstName: field === 'First Name' ? testData.invalid.firstName : testData.valid.firstName,
+    lastName: field === 'Last Name' ? testData.invalid.lastName : testData.valid.lastName,
+    postalCode: field === 'Postal Code' ? testData.invalid.postalCode : testData.valid.postalCode
+  };
+
+  // Chama o comando Cypress para completar o checkout com os dados inválidos
+  cy.completeCheckoutWithInvalidData(invalidData);
+});
+
 When('I add products to the cart', () => {
   cy.purchaseMultipleProducts(testData.products); // Função que adiciona produtos
 });
@@ -119,7 +140,7 @@ When('I click on {string}', (buttonText) => {
 When('I proceed to checkout', () => {
   cy.get('.shopping_cart_link').click();
   cy.get('[data-test="checkout"]').click();
-  cy.completePurchase(testData.information.firstName, testData.information.lastName, testData.information.postalCode);
+  cy.completePurchase(testData.valid.firstName, testData.valid.lastName, testData.valid.postalCode);
 });
 
 Then('the purchase should be successfully completed with the message {string}', (successMessage) => {
@@ -130,22 +151,22 @@ Then('the purchase should be successfully completed with the message {string}', 
 When('I try to complete the purchase without filling {string}', (field) => {
   cy.get('[data-test="shopping-cart-link"]').click()
   // cy.get('[data-test="finish"]').click()
-  // const fields = testData.information;
+  // const fields = testData.valid;
   // cy.checkoutWithoutField(fields, field);
 
    // Obtenha os dados dos campos de teste
   //  const fields = {
-  //   firstName: testData.information.firstName,
-  //   lastName: testData.information.lastName,
-  //   postalCode: testData.information.postalCode
+  //   firstName: testData.valid.firstName,
+  //   lastName: testData.valid.lastName,
+  //   postalCode: testData.valid.postalCode
   // };
 
   // Chame o comando que deixa o campo especificado vazio
   // cy.checkoutWithoutField(fields, field);
    // Definir os campos com base no campo omitido
-  //  const firstName = field === 'firstName' ? undefined : testData.information.firstName;
-  //  const lastName = field === 'lastName' ? undefined : testData.information.lastName;
-  //  const postalCode = field === 'postalCode' ? undefined : testData.information.postalCode;
+  //  const firstName = field === 'firstName' ? undefined : testData.valid.firstName;
+  //  const lastName = field === 'lastName' ? undefined : testData.valid.lastName;
+  //  const postalCode = field === 'postalCode' ? undefined : testData.valid.postalCode;
    
    const firstName = field === 'First Name';
    const lastName = field === 'Last Name';
@@ -159,13 +180,13 @@ When('I try to complete the purchase without filling {string}', (field) => {
    cy.checkoutWithoutField(firstName, lastName, postalCode);
 });
 
-// Then('I should see the error message', function () {
+Then('I should see the error message in the shopping cart {string}', function (errorMessage) {
 
-//   true
-//     // Verifica se a mensagem de erro está sendo exibida c
-//     // cy.log(errorMessage)
-//     // cy.get('.error-message-container').should('contain', errorMessage);
-// });
+  // true
+    // Verifica se a mensagem de erro está sendo exibida c
+    // cy.log(errorMessage)
+    cy.get('.error-message-container').should('contain', errorMessage);
+});
 
 When('I click on {string}', (buttonText) => {
   cy.contains(buttonText).click(); // Click on "Continue Shopping"
@@ -181,7 +202,7 @@ When('I add products to the cart and proceed to checkout', () => {
   cy.get('[data-test="checkout"]').click();
 
   // Completa o checkout
-  cy.completePurchase(testData.information.firstName, testData.information.lastName, testData.information.postalCode);
+  cy.completePurchase(testData.valid.firstName, testData.valid.lastName, testData.valid.postalCode);
 });
 // Verifica o redirecionamento para a página de produtos
 Then('I should be redirected to the product page', () => {

@@ -1,12 +1,13 @@
 {
-    "login": {
-      "username": "standard_user",
-      "password": "secret_sauce"
-    },
-    "information": {
+    "valid": {
       "firstName": "John",
       "lastName": "Doe",
       "postalCode": "12345"
+    },
+    "invalid": {
+      "firstName": "A",  
+      "lastName": "", 
+      "postalCode": "ABC123"
     },
 
     "errorMessages": {

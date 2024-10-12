@@ -87,20 +87,20 @@ Cypress.Commands.add('checkoutWithoutField', (firstName, lastName, postalCode) =
       // Preenche as informações de envio se forem fornecidas, caso contrário, deixa o campo em branco
       if (firstName !== false) {
         cy.get('[data-test="firstName"]').clear();
-        cy.get('[data-test="lastName"]').clear().type(testData.information.lastName);
-        cy.get('[data-test="postalCode"]').clear().type(testData.information.postalCode);
+        cy.get('[data-test="lastName"]').clear().type(testData.valid.lastName);
+        cy.get('[data-test="postalCode"]').clear().type(testData.valid.postalCode);
 
       } 
 
       if (lastName !== false) {
-        cy.get('[data-test="firstName"]').clear().type(testData.information.firstName);
+        cy.get('[data-test="firstName"]').clear().type(testData.valid.firstName);
         cy.get('[data-test="lastName"]').clear();
-        cy.get('[data-test="postalCode"]').clear().type(testData.information.postalCode);
+        cy.get('[data-test="postalCode"]').clear().type(testData.valid.postalCode);
       } 
 
       if (postalCode !== false) {
-        cy.get('[data-test="firstName"]').clear().type(testData.information.firstName);
-        cy.get('[data-test="lastName"]').clear().type(testData.information.lastName);
+        cy.get('[data-test="firstName"]').clear().type(testData.valid.firstName);
+        cy.get('[data-test="lastName"]').clear().type(testData.valid.lastName);
         cy.get('[data-test="postalCode"]').clear();
       }   
   });
@@ -149,4 +149,21 @@ Cypress.Commands.add('completePurchase', (firstName, lastName, postalCode) => {
   // Verifica a conclusão do checkout
   cy.url().should('include', '/checkout-complete.html');
   cy.get('.complete-header').should('have.text', 'Thank you for your order!');
+});
+
+// cypress/support/commands.js ou shoppingCartCommands.js
+
+Cypress.Commands.add('completeCheckoutWithInvalidData', (invalidData) => {
+  cy.get('[data-test="shopping-cart-link"]').click()
+  cy.get('[data-test="checkout"]').click()
+
+  cy.get('[data-test="firstName"]').clear().type(invalidData.firstName);
+  cy.get('[data-test="lastName"]').clear().type(invalidData.lastName);
+  cy.get('[data-test="postalCode"]').clear().type(invalidData.postalCode);
+
+  // Tenta continuar o checkout
+  cy.get('[data-test="continue"]').click();
+  
+  // Verifica se a mensagem de erro está visível
+  cy.get('.error-message-container').should('be.visible');
 });
