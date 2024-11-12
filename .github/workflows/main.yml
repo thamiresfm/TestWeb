@@ -1,0 +1,62 @@
+name: Execution
+
+on:
+  repository_dispatch:
+    types: [ automated_tests ]
+
+env:
+  DEFAULT_AMB: "hlg"
+  DEFAULT_BROWSER: "chrome"
+  DEFAULT_TAG: "@regression"
+
+jobs:
+  automated-tests:
+    name: Cypress run
+    runs-on: self-hosted
+    container: cypress/browsers:node14.16.0-chrome90-ff88
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install dependencies and run
+        run: |
+          npm install
+          npm run clean:reports & npm run pretest
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        continue-on-error: true
+        with:
+          command: npx cypress run --env endpoint=${{ github.event.client_payload.endpoint }},endpointMS=${{ github.event.client_payload.endpointMS }}
+
+      - name: run posttest
+        run: |
+          npm run posttest
+
+      - name: Copy test execution videos
+        run: |
+          mkdir public
+          cp -r cypress/videos public/videos
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: HTML_Report
+          path: cypress/reports/mochareports
+
+      # - name: Copy a folder to s3
+      #   uses: prewk/s3-cp-action@v2
+      #   with:
+      #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_HLG }}
+      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_HLG }}
+      #     source: './cypress/reports/mochareports'
+      #     dest: 's3://mt-automated-tests/pr-02/'
+      #     flags: --recursive
+
+      - name: Link To Report
+        run: echo "https://mt-automated-tests.s3.amazonaws.com/pr-02/report.html"
