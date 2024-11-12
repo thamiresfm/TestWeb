@@ -1,62 +1,58 @@
-name: Execution
-
+name: main
 on:
-  repository_dispatch:
-    types: [ automated_tests ]
-
-env:
-  DEFAULT_AMB: "hlg"
-  DEFAULT_BROWSER: "chrome"
-  DEFAULT_TAG: "@regression"
-
+  push:
+    branches:
+      - 'master'
+  pull_request:
 jobs:
-  automated-tests:
-    name: Cypress run
-    runs-on: self-hosted
-    container: cypress/browsers:node14.16.0-chrome90-ff88
+  build-and-test:
+    runs-on: ubuntu-24.04
+    name: Build and test
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          # Action runs: using: node20 as defined in
+          # https://github.com/cypress-io/github-action/blob/master/action.yml
+          # Node.js minor version is aligned to
+          # https://github.com/actions/runner/blob/main/src/Misc/externals.sh
+          node-version: 20.18.0
+      - run: npm ci
+      - run: npm run format
+      - run: npm run build
+      - run: npm test
 
-      - name: Install dependencies and run
-        run: |
-          npm install
-          npm run clean:reports & npm run pretest
-
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
-        continue-on-error: true
+  release:
+    runs-on: ubuntu-24.04
+    name: release
+    needs: [build-and-test]
+    # only release from the master branch
+    # in parent repository, not in a fork
+    if: (github.ref == 'refs/heads/master') &&
+      (github.repository == 'cypress-io/github-action')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - run: npm ci
+      # https://github.com/cycjimmy/semantic-release-action
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
+        id: semantic
         with:
-          command: npx cypress run --env endpoint=${{ github.event.client_payload.endpoint }},endpointMS=${{ github.event.client_payload.endpointMS }}
+          # https://github.com/semantic-release/semantic-release
+          semantic_version: 24.1.0
+          branches: master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: run posttest
-        run: |
-          npm run posttest
-
-      - name: Copy test execution videos
-        run: |
-          mkdir public
-          cp -r cypress/videos public/videos
-
-      - name: Upload Report
-        uses: actions/upload-artifact@v2
-        with:
-          name: HTML_Report
-          path: cypress/reports/mochareports
-
-      # - name: Copy a folder to s3
-      #   uses: prewk/s3-cp-action@v2
-      #   with:
-      #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_HLG }}
-      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_HLG }}
-      #     source: './cypress/reports/mochareports'
-      #     dest: 's3://mt-automated-tests/pr-02/'
-      #     flags: --recursive
-
-      - name: Link To Report
-        run: echo "https://mt-automated-tests.s3.amazonaws.com/pr-02/report.html"
+      - name: Push updates to branch for major version
+        # if there is a new version published, let's say v1.2.3
+        # then this step will update branch "v1" to this commit
+        # https://github.com/cypress-io/github-action/branches
+        if: steps.semantic.outputs.new_release_published == 'true'
+        run: 'git push https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:refs/heads/v${{steps.semantic.outputs.new_release_major_version}}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
